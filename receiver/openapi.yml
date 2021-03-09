@@ -1,0 +1,94 @@
+openapi: 3.0.0
+
+info:
+  description: This is a API for management of warehouses in which truck drivers request for gate number and warehouse managers assign gates to trucks.
+  version: "1.0.0"
+  title: Warehouse_management API
+  contact:
+    email: harika.karanveer@outlook.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: trucks
+    description: Truck drivers request for gates and have a Licence number
+  - name: managers
+    description: Managers assign gates (gate number) to trucks (Truck's License number)
+paths:
+  /gate/req:
+    post:
+      tags:
+        - trucks
+      summary: sends request for a gate number 
+      operationId: app.req_gate
+      description: Truck driver sends request for a gate number alongside ataching their license number
+      responses:
+        '201':
+          description: request sent
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: a truck is already assigned to a gate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Truck'
+        description: Truck to be assigned
+  /gate/assign:
+    post:
+      tags:
+        - managers
+      summary: assigns gates to trucks 
+      operationId: app.assign_gate
+      description: Warehouse managers assign gate to truck using their license plates
+      responses:
+        '201':
+          description: gate assigned
+        '400':
+          description: 'invalid input, object invalid'
+        '409':
+          description: a gate is already assigned to this truck
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Gate'
+        description: Gate to be assigned to a truck
+components:
+  schemas:
+    Truck:
+      type: object
+      required:
+        - truck_id
+        - license_plate
+        - trailer_type
+      properties:
+        truck_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        license_plate:
+          type: string
+          example: WN48YT
+        trailer_type:
+          type: string
+          example: Refrigerated Trailer
+
+    Gate:
+      type: object
+      required:
+        - truck_id
+        - license_plate
+        - gate_number
+      properties:
+        truck_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        license_plate:
+          type: string
+          example: WN48YT
+        gate_number:
+          type: number
+          example: 50

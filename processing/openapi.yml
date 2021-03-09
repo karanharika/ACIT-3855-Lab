@@ -1,0 +1,51 @@
+openapi: 3.0.0
+
+info:
+  description: This API provides event stats
+  version: "1.0.0"
+  title: Stats API
+  contact:
+    email: kharika@my.bcit.ca
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+paths:
+  /stats:
+    get:
+      summary: Gets the events stats
+      operationId: app.get_stats
+      description: Gets Gate request and Gate Assignment events statistics
+      responses:
+        '200':
+          description: Successfully returned a list of events
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/EventStats'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  schemas:
+    EventStats:
+      required:
+        - num_gate_requests
+        - num_gate_assignments
+      properties:
+        num_gate_requests:
+          type: number
+          example: 2000
+        num_gate_assignments:
+          type: number
+          example: 3000
+      type: object

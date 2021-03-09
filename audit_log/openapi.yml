@@ -1,0 +1,138 @@
+openapi: 3.0.0
+
+info:
+  description: This is a API for getting events with event type and index
+  version: "1.0.0"
+  title: Audit API
+  contact:
+    email: kharika@my.bcit.ca
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: trucks
+    description: Truck drivers request for gates and have a Licence number
+  - name: managers
+    description: Managers assign gates (gate number) to trucks (Truck's License number)
+paths:
+  /gate/req:
+    get:
+      tags:
+        - managers
+      summary: gets the gate_requests
+      operationId: app.get_req_gate
+      description: gets the recent gate_requests based in an index, these are made by truck drivers
+      parameters:
+        - name: index
+          in: query
+          description: Gets the Gate request at the index in the event store
+          schema:
+            type: integer
+            example: 100
+      responses:
+        '200':
+          description: Successfully retuened a gate request event
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Truck'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /gate/assign:
+    get:
+      tags:
+        - truck
+      summary: gets the gate_assignment event
+      operationId: app.get_assign_gate
+      description: gets the recent gate_assign based on index, these are made by managers
+      parameters:
+        - name: index
+          in: query
+          description: Gets the Gate request at the index in the event store
+          schema:
+            type: integer
+            example: 150
+      responses:
+        '200':
+          description: Successfully retuened a gate request event
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/Gate'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  schemas:
+    Truck:
+      type: object
+      required:
+        - truck_id
+        - license_plate
+        - trailer_type
+      properties:
+        truck_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        license_plate:
+          type: string
+          example: WN48YT
+        trailer_type:
+          type: string
+          example: Refrigerated Trailer
+
+    Gate:
+      type: object
+      required:
+        - truck_id
+        - license_plate
+        - gate_number
+      properties:
+        truck_id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        license_plate:
+          type: string
+          example: WN48YT
+        gate_number:
+          type: number
+          example: 50

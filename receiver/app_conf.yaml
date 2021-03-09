@@ -1,0 +1,9 @@
+version: 1
+gate_request:
+  url: http://localhost:8090/gate/req
+gate_assign:
+  url: http://localhost:8090/gate/assign
+events:
+  hostname: acit-3855-labs.eastus2.cloudapp.azure.com
+  port: 9092
+  topic: events

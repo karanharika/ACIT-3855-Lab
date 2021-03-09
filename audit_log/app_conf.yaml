@@ -1,0 +1,4 @@
+events:
+  hostname: acit-3855-labs.eastus2.cloudapp.azure.com
+  port: 9092
+  topic: events
