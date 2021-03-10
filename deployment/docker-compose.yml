@@ -58,9 +58,20 @@ services:
 
   processing:
     image: processing
+<<<<<<< Updated upstream
     ports:
       - "8100:8100"
     network_mode: "host"
+=======
+<<<<<<< HEAD
+    network_mode:
+      - "host"
+=======
+    ports:
+      - "8100:8100"
+    network_mode: "host"
+>>>>>>> feade4f350f279d5dd2f05dacd01833a997b59fb
+>>>>>>> Stashed changes
     depends_on:
       - "storage"
 
