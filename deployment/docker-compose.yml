@@ -60,8 +60,7 @@ services:
     image: processing
     ports:
       - "8100:8100"
-    network_mode:
-      - "host"
+    network_mode: "host"
     depends_on:
       - "storage"
 
