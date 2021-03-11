@@ -4,6 +4,6 @@ gate_request:
 gate_assign:
   url: http://localhost:8090/gate/assign
 events:
-  hostname: acit-3855-labs.eastus2.cloudapp.azure.com
+  hostname: acit-3855-lab.westus.cloudapp.azure.com
   port: 9092
   topic: events
