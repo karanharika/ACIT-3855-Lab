@@ -2,10 +2,10 @@ version: 1
 datastore:
   user: root
   password: *******
-  hostname: acit-3855-lab.eastus2.cloudapp.azure.com
+  hostname: acit-3855-lab.westus.cloudapp.azure.com
   port: 3306
   db: events
 events:
-  hostname: acit-3855-lab.eastus2.cloudapp.azure.com
+  hostname: acit-3855-lab.westus.cloudapp.azure.com
   port: 9092
   topic: events
