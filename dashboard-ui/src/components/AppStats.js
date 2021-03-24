@@ -39,8 +39,8 @@ export default function AppStats() {
 							<th>Gate Assignment</th>
 						</tr>
 						<tr>
-							<td># BP: {stats['num_gate_requests']}</td>
-							<td># HR: {stats['num_gate_assignments']}</td>
+							<td># Gate Req: {stats['num_gate_requests']}</td>
+							<td># Gate Assign: {stats['num_gate_assignments']}</td>
 						</tr>
 						{/* <tr>
 							<td colspan="2">Max BP Systolic: {stats['max_bp_sys_reading']}</td>
