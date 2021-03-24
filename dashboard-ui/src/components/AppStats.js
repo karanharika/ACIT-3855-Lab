@@ -35,14 +35,14 @@ export default function AppStats() {
                 <table className={"StatsTable"}>
 					<tbody>
 						<tr>
-							<th>Blood Pressure</th>
-							<th>Heart Rate</th>
+							<th>Gate Request</th>
+							<th>Gate Assignment</th>
 						</tr>
 						<tr>
-							<td># BP: {stats['num_bp_readings']}</td>
-							<td># HR: {stats['num_hr_readings']}</td>
+							<td># BP: {stats['num_gate_requests']}</td>
+							<td># HR: {stats['num_gate_assignments']}</td>
 						</tr>
-						<tr>
+						{/* <tr>
 							<td colspan="2">Max BP Systolic: {stats['max_bp_sys_reading']}</td>
 						</tr>
 						<tr>
@@ -50,7 +50,7 @@ export default function AppStats() {
 						</tr>
 						<tr>
 							<td colspan="2">Max HR: {stats['max_bp_sys_reading']}</td>
-						</tr>
+						</tr> */}
 					</tbody>
                 </table>
                 <h3>Last Updated: {stats['last_updated']}</h3>
