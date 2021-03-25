@@ -74,6 +74,7 @@ services:
     volumes:
       - /home/karan/config/processing:/config
       - /home/karan/logs:/logs
+      - processing-db:/data
     depends_on:
       - "storage"
 
@@ -99,3 +100,4 @@ services:
 
 volumes:
   my-db: {}
+  processing-db:
