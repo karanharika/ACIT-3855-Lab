@@ -49,6 +49,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/karan/config/receiver:/config
+      - /home/karan/logs:/logs
     depends_on:
       - "kafka"
 
@@ -60,6 +61,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/karan/config/storage:/config
+      - /home/karan/logs:/logs
     depends_on:
       - "kafka"
       - "db"
@@ -71,6 +73,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/karan/config/processing:/config
+      - /home/karan/logs:/logs
     depends_on:
       - "storage"
 
@@ -82,6 +85,7 @@ services:
       - TARGET_ENV=test
     volumes:
       - /home/karan/config/audit_log:/config
+      - /home/karan/logs:/logs
     depends_on:
       - "kafka"
 
