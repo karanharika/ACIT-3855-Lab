@@ -2,6 +2,7 @@ import connexion
 # from connexion import NoContent
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import and_
 from base import Base
 from gate_request import GateRequest
 from gate_assign import GateAssign
@@ -12,8 +13,10 @@ import datetime
 import json
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
+# from pykafka.exceptions import SocketDisconnectedError
 from threading import Thread
 import os
+import time
 
 if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
     print("In Test Enviornment")
@@ -45,15 +48,16 @@ logger.info(
     f"Connecting to the Database at Hostname: {app_config['datastore']['hostname']} and Port: {app_config['datastore']['port']}")
 
 
-def get_req_gate(timestamp):
+def get_req_gate(start_timestamp, end_timestamp):
     """ Gets the gate request event after the timestamp """
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-    print(timestamp_datetime)
-    gate_requests = session.query(GateRequest).filter(GateRequest.date_created >= timestamp_datetime)
-    print(gate_requests)
+    start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%d %H:%M:%S")
+    end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%d %H:%M:%S")
+    # print(start_timestamp_datetime)
+    gate_requests = session.query(GateRequest).filter(and_(GateRequest.date_created >= start_timestamp_datetime, GateRequest.date_created < end_timestamp_datetime))
+    # print(gate_requests)
     results_list = []
 
     for request in gate_requests:
@@ -61,19 +65,20 @@ def get_req_gate(timestamp):
 
     session.close()
 
-    logger.info(f"Query for Gate Requests after {timestamp} returns {len(results_list)} results")
+    logger.info(f"Query for Gate Requests from {start_timestamp} to {end_timestamp} returns {len(results_list)} results")
 
     return results_list, 200
 
 
-def get_assign_gate(timestamp):
+def get_assign_gate(start_timestamp, end_timestamp):
     """ Gets the gate assigned event after the timestamp """
 
     session = DB_SESSION()
 
-    timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+    start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%d %H:%M:%S")
+    end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%d %H:%M:%S")
 
-    gate_assignments = session.query(GateAssign).filter(GateAssign.date_created >= timestamp_datetime)
+    gate_assignments = session.query(GateAssign).filter(and_(GateAssign.date_created >= start_timestamp_datetime, GateAssign.date_created < end_timestamp_datetime))
 
     results_list = []
 
@@ -82,7 +87,7 @@ def get_assign_gate(timestamp):
 
     session.close()
 
-    logger.info(f"Query for Gate Assignments after {timestamp} returns {len(results_list)} results")
+    logger.info(f"Query for Gate Assignments from {start_timestamp} to {end_timestamp} returns {len(results_list)} results")
 
     return results_list, 200
 
@@ -90,9 +95,19 @@ def get_assign_gate(timestamp):
 def process_messages():
     """ Process event messages """
 
+    current_retry_count = 0
     hostname = f'{app_config["events"]["hostname"]}:{app_config["events"]["port"]}'
-    client = KafkaClient(hosts=hostname)
-    topic = client.topics[str.encode(app_config["events"]["topic"])]
+
+    while current_retry_count < app_config["events"]["max_retries"]:
+        logger.info(f"Trying to connect to Kafka. Try Number: {current_retry_count}")
+        try:
+            client = KafkaClient(hosts=hostname)
+            topic = client.topics[str.encode(app_config["events"]["topic"])]
+
+        except:
+            logger.error("Connection to Kafka failed")
+            time.sleep(app_config["app_settings"]["sleep_time"])
+            current_retry_count += 1
 
     consumer = topic.get_simple_consumer(consumer_group=b'event_group',
                                          reset_offset_on_start=False,

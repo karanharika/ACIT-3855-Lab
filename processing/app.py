@@ -68,12 +68,13 @@ def populate_stats():
         stats = json.loads(data)
         stats_file.close()
 
-    last_updated = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    current_timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    last_updated = current_timestamp
 
     if "last_updated" in stats:
         last_updated = stats["last_updated"]
 
-    response = requests.get(app_config["eventstore"]["url"] + "/gate/req?timestamp=" + last_updated)
+    response = requests.get(app_config["eventstore"]["url"] + "/gate/req?start_timestamp=" + last_updated + "&end_timestamp=" + current_timestamp)
     # http://localhost:8090   /gate/req?timestamp=   2021-02-19T09:12:33Z
     if response.status_code == 200:
         if "num_gate_requests" in stats.keys():
@@ -85,7 +86,7 @@ def populate_stats():
     else:
         logger.error("An error occurred while getting gate request data")
 
-    response = requests.get(app_config["eventstore"]["url"] + "/gate/assign?timestamp=" + last_updated)
+    response = requests.get(app_config["eventstore"]["url"] + "/gate/assign?start_timestamp=" + last_updated + "&end_timestamp=" + current_timestamp)
     # print(len(response.json()))
     # print(last_updated)
     if response.status_code == 200:
@@ -97,7 +98,7 @@ def populate_stats():
     else:
         logger.error("An error occurred while getting gate request data")
 
-    stats["last_updated"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    stats["last_updated"] = current_timestamp
 
     stats_file = open(app_config["datastore"]["filename"], "w")
     stats_file.write(json.dumps(stats, indent=4))

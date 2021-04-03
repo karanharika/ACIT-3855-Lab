@@ -9,3 +9,6 @@ events:
   hostname: acit-3855-lab.westus.cloudapp.azure.com
   port: 9092
   topic: events
+  max_retries: 5
+app_settings:
+  sleep_time: 3

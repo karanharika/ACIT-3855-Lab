@@ -16,25 +16,6 @@ tags:
     description: Managers assign gates (gate number) to trucks (Truck's License number)
 paths:
   /gate/req:
-#    post:
-#      tags:
-#        - trucks
-#      summary: sends request for a gate number
-#      operationId: app.req_gate
-#      description: Truck driver sends request for a gate number alongside ataching their license number
-#      responses:
-#        '201':
-#          description: request sent
-#        '400':
-#          description: 'invalid input, object invalid'
-#        '409':
-#          description: a truck is already assigned to a gate
-#      requestBody:
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/Truck'
-#        description: Truck to be assigned
 
     get:
       tags:
@@ -43,9 +24,14 @@ paths:
       operationId: app.get_req_gate
       description: gets the recent gate_requests added added after a timestamp that are made by truck drivers
       parameters:
-        - name: timestamp
+        - name: start_timestamp
           in: query
-          description: Limits the number of items on a page
+          description: Limits the number of items on a page based on start time
+          schema:
+            $ref: '#/components/schemas/Timestamp'
+        - name: end_timestamp
+          in: query
+          description: Limits the number of items on a page based on last time
           schema:
             $ref: '#/components/schemas/Timestamp'
       responses:
@@ -68,25 +54,6 @@ paths:
                     type: string
 
   /gate/assign:
-#    post:
-#      tags:
-#        - managers
-#      summary: assigns gates to trucks
-#      operationId: app.assign_gate
-#      description: Warehouse managers assign gate to truck using their license plates
-#      responses:
-#        '201':
-#          description: gate assigned
-#        '400':
-#          description: 'invalid input, object invalid'
-#        '409':
-#          description: a gate is already assigned to this truck
-#      requestBody:
-#        content:
-#          application/json:
-#            schema:
-#              $ref: '#/components/schemas/Gate'
-#        description: Gate to be assigned to a truck
 
     get:
       tags:
@@ -97,7 +64,12 @@ paths:
       parameters:
         - name: timestamp
           in: query
-          description: Limits the number of items on a page
+          description: Limits the number of items on a page based on start time
+          schema:
+            $ref: '#/components/schemas/Timestamp'
+        - name: end_timestamp
+          in: query
+          description: Limits the number of items on a page based on last time
           schema:
             $ref: '#/components/schemas/Timestamp'
       responses:
