@@ -62,7 +62,7 @@ paths:
       operationId: app.get_assign_gate
       description: gets the recent gate_assignments added added after a timestamp
       parameters:
-        - name: timestamp
+        - name: start_timestamp
           in: query
           description: Limits the number of items on a page based on start time
           schema:
