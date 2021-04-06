@@ -8,6 +8,7 @@ import datetime
 import json
 from pykafka import KafkaClient
 import os
+import time
 
 if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
     print("In Test Enviornment")
@@ -30,15 +31,27 @@ logger = logging.getLogger('basicLogger')
 logger.info(f"App Conf File: {app_conf_file}")
 logger.info(f"Log Conf File: {log_conf_file}")
 
+current_retry_count = 0
+hostname = f'{app_config["events"]["hostname"]}:{app_config["events"]["port"]}'
+
+while current_retry_count < app_config["events"]["max_retries"]:
+    logger.info(f"Trying to connect to Kafka. Try Number: {current_retry_count}")
+    try:
+        client = KafkaClient(hosts=hostname)
+        topic = client.topics[str.encode(app_config["events"]["topic"])]
+        producer = topic.get_sync_producer()
+        break
+
+    except:
+        logger.error("Connection of Reciever service failed to Kafka")
+        time.sleep(app_config["app_settings"]["sleep_time"])
+        current_retry_count += 1
+
 def req_gate(body):
     """ This function is for event request """
 
     logger.info("Received event req_gate request with a unique id of " + str(body['truck_id']))
-    # response = requests.post(app_config['gate_request']['url'], json=body)
 
-    client = KafkaClient(hosts=f'{app_config["events"]["hostname"]}:{app_config["events"]["port"]}')
-    topic = client.topics[str.encode(app_config["events"]["topic"])]
-    producer = topic.get_sync_producer()
     msg = {"type": "req_gate",
            "datetime": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
            "payload": body}
@@ -53,11 +66,7 @@ def assign_gate(body):
     """ This function is for 2nd event request """
 
     logger.info("Received event assign_gate request with a unique id of " + str(body['truck_id']))
-    # response = requests.post(app_config['gate_assign']['url'], json=body)
 
-    client = KafkaClient(hosts=f'{app_config["events"]["hostname"]}:{app_config["events"]["port"]}')
-    topic = client.topics[str.encode(app_config["events"]["topic"])]
-    producer = topic.get_sync_producer()
     msg = {"type": "assign_gate",
            "datetime": datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
            "payload": body}
