@@ -13,7 +13,7 @@ import datetime
 import json
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
-# from pykafka.exceptions import SocketDisconnectedError
+from pykafka.exceptions import SocketDisconnectedError
 from threading import Thread
 import os
 import time
@@ -103,10 +103,10 @@ def process_messages():
         try:
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config["events"]["topic"])]
-            break
+            current_retry_count += 1
             # current_retry_count = app_config["events"]["max_retries"]
 
-        except:
+        except SocketDisconnectedError:
             logger.error("Connection to Kafka failed")
             time.sleep(app_config["app_settings"]["sleep_time"])
             current_retry_count += 1
