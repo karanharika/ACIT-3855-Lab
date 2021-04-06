@@ -103,6 +103,8 @@ def process_messages():
         try:
             client = KafkaClient(hosts=hostname)
             topic = client.topics[str.encode(app_config["events"]["topic"])]
+            break
+            # current_retry_count = app_config["events"]["max_retries"]
 
         except:
             logger.error("Connection to Kafka failed")
