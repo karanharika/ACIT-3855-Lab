@@ -95,7 +95,7 @@ def get_assign_gate(index):
 
 
 app = connexion.FlaskApp(__name__, specification_dir='')
-if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
+if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] != "test":
     CORS(app.app)
     app.app.config['CORS_HEADERS'] = 'Content-Type'
 app.add_api("openapi.yml", base_path="/audit_log", strict_validation=True, validate_responses=True)
